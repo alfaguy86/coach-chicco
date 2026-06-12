@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1D9E75" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Coach Chicco" />
+  <title>Coach Chicco</title>
+
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" />
+  <link rel="stylesheet" href="app.css" />
+</head>
+<body>
+
+<div id="app">
+
+  <header class="header">
+    <div class="header-left">
+      <div class="logo"><i class="ti ti-leaf"></i></div>
+      <div>
+        <div class="app-name">Coach Chicco</div>
+        <div class="app-sub">Your personal diet buddy</div>
+      </div>
+    </div>
+    <div class="streak"><i class="ti ti-flame"></i> <span id="streak-count">7</span>-day streak</div>
+  </header>
+
+  <nav class="nav">
+    <button class="nav-tab active" data-page="today"><i class="ti ti-home"></i><span>Today</span></button>
+    <button class="nav-tab" data-page="log"><i class="ti ti-pencil"></i><span>Log</span></button>
+    <button class="nav-tab" data-page="coach"><i class="ti ti-message-circle"></i><span>Coach</span></button>
+    <button class="nav-tab" data-page="ideas"><i class="ti ti-bulb"></i><span>Ideas</span></button>
+    <button class="nav-tab" data-page="notifs"><i class="ti ti-bell"></i><span>Alerts</span></button>
+  </nav>
+
+  <main class="main-content">
+
+    <!-- TODAY -->
+    <section id="page-today" class="page active">
+      <div class="coach-tip" id="daily-tip">
+        <div class="coach-avatar"><i class="ti ti-robot"></i></div>
+        <div>
+          <div class="coach-tip-name">Coach Chicco</div>
+          <div class="coach-tip-text" id="tip-text">Loading your tip…</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><i class="ti ti-run"></i> Garmin steps today</div>
+        <div class="steps-row">
+          <div class="steps-big" id="step-count">—</div>
+          <div class="steps-meta">of <span id="step-goal">10,000</span> goal</div>
+        </div>
+        <div class="progress-bar-bg"><div class="progress-bar-fill" id="step-bar"></div></div>
+        <div class="steps-goal" id="steps-remaining">Connect Garmin to sync your steps</div>
+        <button class="garmin-btn" id="garmin-btn" onclick="connectGarmin()"><i class="ti ti-brand-garmin"></i> Connect Garmin</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Today's nutrition</div>
+        <div class="metric-row">
+          <div class="metric">
+            <div class="metric-label">Calories</div>
+            <div class="metric-val cal" id="cal-val">0</div>
+            <div class="metric-sub">of 1,800</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Protein</div>
+            <div class="metric-val pro" id="pro-val">0g</div>
+            <div class="metric-sub">of 120g</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Water</div>
+            <div class="metric-val water" id="water-val">0L</div>
+            <div class="metric-sub">of 2.5L</div>
+          </div>
+        </div>
+        <div class="water-add">
+          <span style="font-size:13px;color:var(--text-secondary)">Log water:</span>
+          <button class="water-btn" onclick="addWater(250)">+250ml</button>
+          <button class="water-btn" onclick="addWater(500)">+500ml</button>
+          <button class="water-btn" onclick="addWater(750)">+750ml</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- LOG -->
+    <section id="page-log" class="page">
+      <div class="card">
+        <div class="card-title" id="log-date">Today</div>
+        <div class="meal-row" id="meal-list"></div>
+      </div>
+      <button class="add-meal-btn" onclick="openLog('Snack')"><i class="ti ti-plus"></i> Add snack or drink</button>
+      <div class="card" id="log-coach-tip" style="display:none;">
+        <div class="coach-tip blue">
+          <div class="coach-avatar blue-av"><i class="ti ti-salad"></i></div>
+          <div>
+            <div class="coach-tip-name blue-name">Chicco's take on your day</div>
+            <div class="coach-tip-text blue-text" id="log-tip-text"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COACH -->
+    <section id="page-coach" class="page">
+      <div class="chat-wrap">
+        <div class="chat-messages" id="chat-msgs">
+          <div class="msg coach">
+            <div class="msg-bubble">Hey! What's on your mind? Ask me anything — food choices, snack ideas, why you feel drained, what to eat before a walk 😊</div>
+            <div class="msg-time">now</div>
+          </div>
+        </div>
+        <div class="quick-asks">
+          <button class="quick-btn" onclick="quickAsk('Can I have a croissant for breakfast?')">Croissant ok? 🥐</button>
+          <button class="quick-btn" onclick="quickAsk('Is hummus a good snack for weight loss?')">Good snacks?</button>
+          <button class="quick-btn" onclick="quickAsk('Why do I feel so drained at 2pm every day?')">2pm crash?</button>
+          <button class="quick-btn" onclick="quickAsk('What should I eat before an evening walk?')">Pre-walk food?</button>
+        </div>
+        <div class="chat-input-row">
+          <input class="chat-input" id="chat-input" type="text" placeholder="Ask your coach anything…" />
+          <button class="send-btn" id="send-btn"><i class="ti ti-send"></i></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- IDEAS -->
+    <section id="page-ideas" class="page">
+      <div class="section-head">
+        <span class="section-head-title">Meal ideas for you</span>
+        <button class="see-all-btn" id="refresh-ideas"><i class="ti ti-refresh"></i> Refresh</button>
+      </div>
+      <div class="suggest-grid" id="meal-ideas">
+        <div class="suggest-card" onclick="askAboutMeal('Oat & banana bowl')">
+          <div class="suggest-img s1">🥣</div>
+          <div class="suggest-body">
+            <div class="suggest-name">Oat & banana bowl</div>
+            <div class="suggest-cals">~340 kcal</div>
+            <div class="suggest-tags"><span class="tag">slow carbs</span><span class="tag blue">high fiber</span></div>
+          </div>
+        </div>
+        <div class="suggest-card" onclick="askAboutMeal('QuiChicco veggie bowl')">
+          <div class="suggest-img s2">🥗</div>
+          <div class="suggest-body">
+            <div class="suggest-name">QuiChicco veggie bowl</div>
+            <div class="suggest-cals">~480 kcal</div>
+            <div class="suggest-tags"><span class="tag">protein</span><span class="tag blue">filling</span></div>
+          </div>
+        </div>
+        <div class="suggest-card" onclick="askAboutMeal('Baked salmon with broccoli')">
+          <div class="suggest-img s3">🐟</div>
+          <div class="suggest-body">
+            <div class="suggest-name">Baked salmon + broc</div>
+            <div class="suggest-cals">~520 kcal</div>
+            <div class="suggest-tags"><span class="tag">omega-3</span><span class="tag amber">energy+</span></div>
+          </div>
+        </div>
+        <div class="suggest-card" onclick="askAboutMeal('Egg and avocado toast')">
+          <div class="suggest-img s4">🥚</div>
+          <div class="suggest-body">
+            <div class="suggest-name">Egg & avocado toast</div>
+            <div class="suggest-cals">~390 kcal</div>
+            <div class="suggest-tags"><span class="tag">healthy fats</span><span class="tag amber">no crash</span></div>
+          </div>
+        </div>
+        <div class="suggest-card" onclick="askAboutMeal('Lentil soup with whole grain bread')">
+          <div class="suggest-img s1">🍲</div>
+          <div class="suggest-body">
+            <div class="suggest-name">Lentil soup</div>
+            <div class="suggest-cals">~410 kcal</div>
+            <div class="suggest-tags"><span class="tag">iron</span><span class="tag blue">plant protein</span></div>
+          </div>
+        </div>
+        <div class="suggest-card" onclick="askAboutMeal('Cottage cheese with fruit and nuts')">
+          <div class="suggest-img s4">🫙</div>
+          <div class="suggest-body">
+            <div class="suggest-name">Cottage cheese bowl</div>
+            <div class="suggest-cals">~280 kcal</div>
+            <div class="suggest-tags"><span class="tag">protein</span><span class="tag amber">snack</span></div>
+          </div>
+        </div>
+      </div>
+      <button class="generate-btn" id="weekly-plan-btn">✦ Generate my weekly meal plan</button>
+    </section>
+
+    <!-- ALERTS -->
+    <section id="page-notifs" class="page">
+      <div class="card">
+        <div class="card-title">Push notifications</div>
+        <div class="notif-permission" id="notif-status">
+          <div class="notif-perm-icon"><i class="ti ti-bell"></i></div>
+          <div class="notif-perm-text">Enable notifications to get daily nudges from Coach Chicco</div>
+          <button class="enable-notif-btn" id="enable-notif-btn">Enable notifications</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Daily schedule</div>
+        <div class="schedule-list" id="schedule-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Recent nudges</div>
+        <div class="notif-list" id="notif-history"></div>
+      </div>
+    </section>
+
+  </main>
+
+</div>
+
+<!-- LOG MODAL -->
+<div class="modal-overlay" id="log-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 id="modal-title">Log Meal</h3>
+      <button class="modal-close" onclick="closeLog()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="log-field">
+      <label>What did you eat?</label>
+      <input type="text" id="log-food" placeholder="e.g. Grilled chicken salad" />
+    </div>
+    <div class="log-field">
+      <label>Description (optional)</label>
+      <textarea id="log-desc" placeholder="Sauces, sides, portion size…"></textarea>
+    </div>
+    <div class="log-field">
+      <label>Photo</label>
+      <div class="photo-area" onclick="document.getElementById('photo-input').click()">
+        <i class="ti ti-camera"></i>
+        <span id="photo-label">Tap to add a photo</span>
+        <input type="file" id="photo-input" accept="image/*" capture="environment" style="display:none" onchange="handlePhoto(this)" />
+      </div>
+      <img id="photo-preview" style="display:none;width:100%;border-radius:8px;margin-top:8px;max-height:200px;object-fit:cover;" />
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeLog()">Cancel</button>
+      <button class="btn-save" id="save-btn" onclick="saveLog()"><i class="ti ti-check"></i> Save & analyse</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
